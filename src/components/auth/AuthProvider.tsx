@@ -82,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
+    let authStateInitialized = false;
 
     const initializeAuth = async () => {
       try {
@@ -89,10 +90,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session } } = await supabase.auth.getSession();
         console.log('Initial session check:', session?.user?.id);
         
-        if (mounted) {
+        if (mounted && !authStateInitialized) {
+          authStateInitialized = true;
           setSession(session);
           setUser(session?.user ?? null);
-          setLoading(false); // Set loading false immediately
+          setLoading(false);
           
           // Check admin status asynchronously
           if (session?.user) {
@@ -118,7 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
-        if (mounted) {
+        if (mounted && !authStateInitialized) {
+          authStateInitialized = true;
           setUser(null);
           setSession(null);
           setIsAdmin(false);
@@ -133,10 +136,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
-        if (mounted) {
+        // Only process if this is a different state than what we already have
+        const currentUserId = user?.id;
+        const newUserId = session?.user?.id;
+        
+        if (mounted && currentUserId !== newUserId) {
           setSession(session);
           setUser(session?.user ?? null);
-          setLoading(false); // Set loading false immediately
+          setLoading(false);
           
           // Check admin status, premium status, and new user status asynchronously
           if (session?.user) {
@@ -181,7 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [user?.id]);
 
   const signInWithGoogle = async () => {
     const redirectUrl = `${window.location.origin}/`;

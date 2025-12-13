@@ -371,6 +371,72 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          subject: string
+          content: string
+          message_type: 'admin_to_user' | 'user_to_admin' | 'system'
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          receiver_id: string
+          subject: string
+          content: string
+          message_type?: 'admin_to_user' | 'user_to_admin' | 'system'
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          receiver_id?: string
+          subject?: string
+          content?: string
+          message_type?: 'admin_to_user' | 'user_to_admin' | 'system'
+          read?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: 'product_approved' | 'product_rejected' | 'profile_updated' | 'system'
+          title: string
+          message: string
+          action_url?: string
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: 'product_approved' | 'product_rejected' | 'profile_updated' | 'system'
+          title: string
+          message: string
+          action_url?: string
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: 'product_approved' | 'product_rejected' | 'profile_updated' | 'system'
+          title?: string
+          message?: string
+          action_url?: string
+          read?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -393,7 +459,6 @@ export type Database = {
           updated_at: string
         }
       }
-      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
