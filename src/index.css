@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 120 100% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 120 100% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 120 100% 8%;
+
+    --primary: 120 85% 28%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 120 70% 45%;
+
+    --secondary: 120 35% 97%;
+    --secondary-foreground: 120 100% 12%;
+
+    --muted: 120 25% 96%;
+    --muted-foreground: 120 15% 42%;
+
+    --accent: 120 45% 92%;
+    --accent-foreground: 120 100% 12%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 20% 92%;
+    --input: 120 20% 92%;
+    --ring: 120 85% 28%;
+
+    --radius: 0.75rem;
+
+    /* Enhanced gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(120 85% 28%), hsl(120 70% 45%), hsl(120 60% 60%));
+    --gradient-secondary: linear-gradient(180deg, hsl(120 25% 98%), hsl(120 30% 95%));
+    --gradient-accent: linear-gradient(45deg, hsl(120 45% 92%), hsl(120 35% 88%));
+    --gradient-hero: linear-gradient(135deg, hsl(120 85% 28%) 0%, hsl(120 70% 45%) 50%, hsl(120 60% 60%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(120 20% 98%) 100%);
+    --gradient-glass: linear-gradient(145deg, hsl(0 0% 100% / 0.9) 0%, hsl(120 20% 98% / 0.8) 100%);
+
+    /* Enhanced shadows */
+    --shadow-primary: 0 20px 40px -12px hsl(120 85% 28% / 0.25);
+    --shadow-card: 0 8px 32px -8px hsl(120 20% 20% / 0.08);
+    --shadow-elegant: 0 25px 50px -12px hsl(120 85% 28% / 0.25);
+    --shadow-glow: 0 0 60px hsl(120 70% 45% / 0.3);
+    --shadow-glass: 0 8px 32px -8px hsl(120 20% 20% / 0.1), 0 0 0 1px hsl(120 20% 92% / 0.5);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 120 20% 98%;
+    --sidebar-foreground: 120 10% 25%;
+    --sidebar-primary: 120 100% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 120 30% 95%;
+    --sidebar-accent-foreground: 120 100% 15%;
+    --sidebar-border: 120 20% 88%;
+    --sidebar-ring: 120 100% 25%;
+  }
+
+  .dark {
+    --background: 120 25% 6%;
+    --foreground: 120 15% 92%;
+
+    --card: 120 20% 8%;
+    --card-foreground: 120 15% 92%;
+
+    --popover: 120 20% 8%;
+    --popover-foreground: 120 15% 92%;
+
+    --primary: 120 70% 50%;
+    --primary-foreground: 120 25% 6%;
+    --primary-glow: 120 60% 65%;
+
+    --secondary: 120 15% 12%;
+    --secondary-foreground: 120 15% 88%;
+
+    --muted: 120 12% 12%;
+    --muted-foreground: 120 8% 62%;
+
+    --accent: 120 20% 16%;
+    --accent-foreground: 120 15% 88%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 15% 18%;
+    --input: 120 15% 18%;
+    --ring: 120 70% 50%;
+
+    /* Enhanced dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(120 70% 50%), hsl(120 60% 65%), hsl(120 50% 75%));
+    --gradient-secondary: linear-gradient(180deg, hsl(120 20% 8%), hsl(120 15% 10%));
+    --gradient-accent: linear-gradient(45deg, hsl(120 20% 16%), hsl(120 15% 20%));
+    --gradient-hero: linear-gradient(135deg, hsl(120 70% 50%) 0%, hsl(120 60% 65%) 50%, hsl(120 50% 75%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(120 20% 8%) 0%, hsl(120 15% 10%) 100%);
+    --gradient-glass: linear-gradient(145deg, hsl(120 20% 8% / 0.9) 0%, hsl(120 15% 10% / 0.8) 100%);
+
+    /* Enhanced dark shadows */
+    --shadow-primary: 0 20px 40px -12px hsl(120 70% 50% / 0.3);
+    --shadow-card: 0 8px 32px -8px hsl(120 40% 5% / 0.4);
+    --shadow-elegant: 0 25px 50px -12px hsl(120 70% 50% / 0.3);
+    --shadow-glow: 0 0 60px hsl(120 60% 65% / 0.2);
+    --shadow-glass: 0 8px 32px -8px hsl(120 40% 5% / 0.4), 0 0 0 1px hsl(120 15% 18% / 0.5);
+
+    --sidebar-background: 120 20% 10%;
+    --sidebar-foreground: 120 20% 90%;
+    --sidebar-primary: 120 80% 40%;
+    --sidebar-primary-foreground: 120 20% 8%;
+    --sidebar-accent: 120 20% 15%;
+    --sidebar-accent-foreground: 120 20% 90%;
+    --sidebar-border: 120 20% 20%;
+    --sidebar-ring: 120 80% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  /* Glass morphism effect */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Elegant card with enhanced shadow */
+  .card-elegant {
+    @apply bg-card border shadow-[var(--shadow-elegant)] rounded-xl;
+    background: var(--gradient-card);
+  }
+
+  /* Hero gradient text */
+  .text-gradient {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Animated background */
+  .bg-animated {
+    background: linear-gradient(-45deg, 
+      hsl(var(--background)), 
+      hsl(var(--secondary) / 0.3), 
+      hsl(var(--accent) / 0.2), 
+      hsl(var(--secondary) / 0.1)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  /* Floating animation */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Pulse glow effect */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse-glow {
+    0% { box-shadow: var(--shadow-card); }
+    100% { box-shadow: var(--shadow-glow); }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) skewX(-12deg); }
+    100% { transform: translateX(200%) skewX(-12deg); }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* Modal z-index fixes */
+  [data-state="open"][role="dialog"] {
+    z-index: 9999 !important;
+  }
+
+  [data-state="open"][role="dialog"] > [data-radix-dialog-overlay] {
+    z-index: 9998 !important;
+  }
+
+  [data-state="open"][role="dialog"] > [data-radix-dialog-content] {
+    z-index: 10000 !important;
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+}

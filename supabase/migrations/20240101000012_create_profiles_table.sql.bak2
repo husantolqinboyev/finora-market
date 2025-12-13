@@ -1,0 +1,150 @@
+-- Create profiles table
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  auth_user_id UUID REFERENCES auth.users(id) NOT NULL,
+  full_name TEXT,
+  phone TEXT,
+  telegram_username TEXT,
+  nickname VARCHAR(9) UNIQUE,
+  avatar_url TEXT,
+  address TEXT,
+  bio TEXT,
+  is_admin BOOLEAN DEFAULT FALSE,
+  is_new_user BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_profiles_auth_user_id ON profiles(auth_user_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_is_admin ON profiles(is_admin);
+CREATE INDEX IF NOT EXISTS idx_profiles_is_new_user ON profiles(is_new_user);
+-- Note: nickname index will be created after nickname column is added
+
+-- RLS Policies
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Admins can view all profiles" ON profiles
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() AND is_admin = true
+    )
+  );
+
+CREATE POLICY "Admins can update all profiles" ON profiles
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() AND is_admin = true
+    )
+  );
+
+CREATE POLICY "Users can insert own profile" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Function to check if user is admin
+CREATE OR REPLACE FUNCTION check_admin()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE id = auth.uid() AND is_admin = true
+  );
+END;
+$$;
+
+-- Trigger to auto-generate nickname if not provided
+CREATE OR REPLACE FUNCTION set_nickname_if_null()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.nickname IS NULL OR NEW.nickname = '' THEN
+        NEW.nickname := generate_unique_nickname();
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+-- Function to generate unique nickname
+CREATE OR REPLACE FUNCTION generate_unique_nickname()
+RETURNS TEXT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    new_nickname TEXT;
+    max_attempts INTEGER := 10;
+    attempt INTEGER := 0;
+    chars TEXT := 'abcdefghijklmnopqrstuvwxyz0123456789_';
+    nickname_length INTEGER;
+BEGIN
+    -- Random length between 5 and 9
+    nickname_length := floor(random() * 5) + 5; -- 5 to 9
+    
+    LOOP
+        attempt := attempt + 1;
+        
+        -- Generate random nickname
+        new_nickname := '';
+        FOR i IN 1..nickname_length LOOP
+            new_nickname := new_nickname || substring(chars, floor(random() * length(chars)) + 1, 1);
+        END LOOP;
+        
+        -- Ensure it starts with a letter (not underscore or number)
+        IF substring(new_nickname, 1, 1) IN ('_', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9') THEN
+            new_nickname := 'a' || substring(new_nickname, 2, length(new_nickname) - 1);
+        END IF;
+        
+        -- Check if unique
+        IF NOT EXISTS (SELECT 1 FROM profiles WHERE nickname = new_nickname) THEN
+            EXIT;
+        END IF;
+        
+        -- Safety check to prevent infinite loop
+        IF attempt >= max_attempts THEN
+            -- Generate with timestamp if all attempts failed
+            new_nickname := 'user_' || extract(epoch from now())::bigint;
+            EXIT;
+        END IF;
+    END LOOP;
+    
+    RETURN new_nickname;
+END;
+$$;
+
+-- Create trigger for nickname generation
+DROP TRIGGER IF EXISTS trigger_set_nickname ON profiles;
+CREATE TRIGGER trigger_set_nickname
+  BEFORE INSERT ON profiles
+  FOR EACH ROW EXECUTE FUNCTION set_nickname_if_null();
+
+-- Function to mark user as completed setup
+CREATE OR REPLACE FUNCTION complete_user_setup()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.full_name IS NOT NULL AND NEW.full_name != '' AND
+       NEW.phone IS NOT NULL AND NEW.phone != '' THEN
+        NEW.is_new_user = FALSE;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+-- Create trigger for setup completion
+DROP TRIGGER IF EXISTS trigger_complete_user_setup ON profiles;
+CREATE TRIGGER trigger_complete_user_setup
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION complete_user_setup();
