@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import CookieSecurity from "@/components/security/CookieSecurity";
 import { SecurityProvider } from "@/lib/security/security-context";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Auth from "./pages/Auth";
@@ -29,6 +30,7 @@ const App = () => (
         <AuthProvider>
           <TooltipProvider>
             <CookieSecurity />
+            <PWAInstallPrompt />
             <Toaster />
             <Sonner />
             <Routes>
