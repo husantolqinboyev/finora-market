@@ -14,6 +14,7 @@ export class GeminiAIService {
   constructor() {
     // Load all API keys from environment
     this.apiKeys = [
+      import.meta.env.VITE_GEMINI_API_KEY,
       import.meta.env.VITE_GEMINI_API_KEY_1,
       import.meta.env.VITE_GEMINI_API_KEY_2,
       import.meta.env.VITE_GEMINI_API_KEY_3,
@@ -24,7 +25,7 @@ export class GeminiAIService {
       import.meta.env.VITE_GEMINI_API_KEY_8,
       import.meta.env.VITE_GEMINI_API_KEY_9,
       import.meta.env.VITE_GEMINI_API_KEY_10,
-    ].filter(key => key && key !== 'your_gemini_api_key_here' && key.startsWith('AIza'));
+    ].filter(key => key && key !== 'your_gemini_api_key_here' && key !== 'your_valid_gemini_api_key_here' && key.startsWith('AIza'));
 
     // Initialize usage counts for each key
     const today = new Date().toDateString();
