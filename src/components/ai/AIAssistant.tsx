@@ -371,8 +371,8 @@ const AIAssistant: React.FC = () => {
           
           {/* Desktop Chat Messages */}
           <CardContent className="flex-1 p-2 sm:p-3 md:p-4 flex flex-col bg-gradient-to-b from-gray-50/50 to-white/80 pb-20">
-            <ScrollArea className="flex-1 pr-1 sm:pr-2">
-              <div className="space-y-2 sm:space-y-3">
+            <ScrollArea className="flex-1 pr-1 sm:pr-2" ref={messagesEndRef}>
+              <div className="space-y-2 sm:space-y-3 pb-4">
                 {messages.map((message, index) => (
                   <div
                     key={message.id}
@@ -432,7 +432,7 @@ const AIAssistant: React.FC = () => {
                   </div>
                 )}
                 
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-0" />
               </div>
             </ScrollArea>
           </CardContent>
@@ -715,7 +715,7 @@ const AIAssistant: React.FC = () => {
                     </div>
                   )}
                   
-                  <div ref={messagesEndRef} />
+                  <div ref={messagesEndRef} className="h-0" />
                 </div>
               </ScrollArea>
             </CardContent>
