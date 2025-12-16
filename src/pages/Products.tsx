@@ -54,21 +54,27 @@ const Products = () => {
   const fetchListings = async () => {
     console.log('fetchListings called');
     try {
-      // Fetch categories first
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const categoriesResponse = await (supabase as any)
+      // Fetch categories first - use public client for categories
+      const { createClient } = await import('@supabase/supabase-js');
+      const publicSupabase = createClient(
+        import.meta.env.VITE_SUPABASE_URL,
+        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+      );
+      
+      const categoriesResponse = await publicSupabase
         .from('categories')
         .select('id, name')
         .order('name');
       
       if (!categoriesResponse.error && categoriesResponse.data) {
         setCategories(categoriesResponse.data);
+      } else if (categoriesResponse.error) {
+        console.error('Categories error:', categoriesResponse.error);
       }
 
-      // Fetch listings (only approved and not expired)
+      // Fetch listings (only approved and not expired) - use public client
       const now = new Date().toISOString();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const listingsResponse = await (supabase as any)
+      const listingsResponse = await publicSupabase
         .from('listings')
         .select('*')
         .eq('status', 'approved')
@@ -89,13 +95,12 @@ const Products = () => {
         (categoriesResponse.data || []).map(cat => [cat.id, cat.name])
       );
 
-      // Fetch profiles for owners with error handling
+      // Fetch profiles for owners with error handling - use public client
       let profileMap = new Map();
       try {
         const ownerIds = [...new Set(listings.map(l => l.owner_id).filter(Boolean))];
         if (ownerIds.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const profilesResponse = await (supabase as any)
+          const profilesResponse = await publicSupabase
             .from('profiles')
             .select('id, full_name, avatar_url')
             .in('id', ownerIds);
