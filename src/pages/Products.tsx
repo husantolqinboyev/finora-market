@@ -56,8 +56,16 @@ const Products = () => {
     try {
       // Import the global public client with relative path
       console.log('Attempting to import public client...');
-      const { publicSupabase } = await import('../lib/public-client');
-      console.log('Public client imported successfully');
+      let publicSupabase;
+      try {
+        const module = await import('../lib/public-client');
+        publicSupabase = module.publicSupabase;
+        console.log('Public client imported successfully');
+      } catch (importError) {
+        console.error('Import error:', importError);
+        console.error('Import details:', importError.message);
+        throw new Error(`Failed to import public client: ${importError.message}`);
+      }
       
       console.log('Fetching categories with public client...');
       console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
