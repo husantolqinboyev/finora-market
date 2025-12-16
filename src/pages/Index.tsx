@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogOverlay } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/components/auth/useAuth';
 import Header from '@/components/layout/Header';
@@ -585,7 +585,8 @@ const Index = () => {
       {/* Post Form Modal */}
       {showPostForm && (
         <Dialog open={showPostForm} onOpenChange={setShowPostForm}>
-          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto border-0 shadow-2xl bg-white/95 backdrop-blur-lg">
+          <DialogOverlay className="z-[9998] bg-black/50 backdrop-blur-sm" />
+          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto border-0 shadow-2xl bg-white/95 backdrop-blur-lg z-[9999] fixed">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 rounded-lg"></div>
             <DialogHeader className="relative pb-6">
               <div className="text-center">
