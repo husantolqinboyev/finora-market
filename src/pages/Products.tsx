@@ -54,26 +54,21 @@ const Products = () => {
   const fetchListings = async () => {
     console.log('fetchListings called');
     try {
-      // Fetch categories first - use public client for categories
-      const { createClient } = await import('@supabase/supabase-js');
-      const publicSupabase = createClient(
-        import.meta.env.VITE_SUPABASE_URL,
-        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        {
-          auth: {
-            persistSession: false,
-            autoRefreshToken: false
-          }
-        }
-      );
+      // Import the global public client
+      const { publicSupabase } = await import('@/lib/public-client');
       
       console.log('Fetching categories with public client...');
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+      
       const categoriesResponse = await publicSupabase
         .from('categories')
         .select('id, name')
         .order('name');
       
       console.log('Categories response:', categoriesResponse);
+      console.log('Categories data:', categoriesResponse.data);
+      console.log('Categories error:', categoriesResponse.error);
       
       if (!categoriesResponse.error && categoriesResponse.data) {
         setCategories(categoriesResponse.data);
@@ -174,6 +169,7 @@ const Products = () => {
       setListings(transformedListings);
     } catch (error) {
       console.error('Error fetching listings:', error);
+      console.error('Error details:', error.message);
       toast({
         title: "Xatolik",
         description: "Mahsulotlarni yuklashda xatolik",
