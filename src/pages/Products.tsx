@@ -55,7 +55,9 @@ const Products = () => {
     console.log('fetchListings called');
     try {
       // Import the global public client with relative path
+      console.log('Attempting to import public client...');
       const { publicSupabase } = await import('../lib/public-client');
+      console.log('Public client imported successfully');
       
       console.log('Fetching categories with public client...');
       console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
