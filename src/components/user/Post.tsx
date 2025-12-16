@@ -65,7 +65,7 @@ const Post: React.FC = () => {
         
         // Try to use public client first
         try {
-          const { publicSupabase } = await import('../lib/public-client');
+          const { publicSupabase } = await import('../../lib/public-client');
           const { data, error } = await publicSupabase
             .from('categories')
             .select('id, name')
