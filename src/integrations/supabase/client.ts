@@ -8,13 +8,14 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// Secure HttpOnly cookie-based configuration
+// Standard Supabase configuration with localStorage persistence
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    // Use HttpOnly cookies but allow session persistence for OAuth
-    persistSession: true, // Required for OAuth callbacks
-    autoRefreshToken: true, // Let server handle refresh via HttpOnly cookies
+    persistSession: true, // Keep session in localStorage
+    autoRefreshToken: true, // Auto refresh tokens
     detectSessionInUrl: true, // Handle OAuth callbacks
     flowType: 'pkce', // Use PKCE for better security
+    storage: window.localStorage, // Explicitly use localStorage
+    storageKey: 'sb-auth-token' // Standard Supabase storage key
   }
 });

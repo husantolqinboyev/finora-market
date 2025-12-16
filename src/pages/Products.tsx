@@ -53,6 +53,22 @@ const Products = () => {
 
   const fetchListings = async () => {
     console.log('fetchListings called');
+    
+    // Debug authentication state
+    try {
+      const { checkAuthState, resetSupabaseAuth } = await import('../lib/security/token-security');
+      const authState = checkAuthState();
+      console.log('Current auth state:', authState);
+      
+      // If no token found, try to reset auth
+      if (!authState.hasToken) {
+        console.log('No token found, resetting auth storage...');
+        resetSupabaseAuth();
+      }
+    } catch (debugError) {
+      console.error('Auth debug error:', debugError);
+    }
+    
     try {
       // Import the global public client with relative path
       console.log('Attempting to import public client...');

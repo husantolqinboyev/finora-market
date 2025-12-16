@@ -197,37 +197,74 @@ class TokenSecurityManager {
 }
 
 // Create secure storage adapter for Supabase
+// DISABLED: Using standard Supabase localStorage to avoid token conflicts
 const createSecureStorage = (): SecureStorage => {
-  const securityManager = TokenSecurityManager.getInstance();
-
+  // Use standard localStorage to avoid conflicts with Supabase auth
   return {
     getItem: (key: string) => {
-      if (key.includes('auth') || key.includes('token')) {
-        return securityManager.secureGetToken();
-      }
       return localStorage.getItem(key);
     },
     
     setItem: (key: string, value: string) => {
-      if (key.includes('auth') || key.includes('token')) {
-        securityManager.secureSetToken(value);
-      } else {
-        localStorage.setItem(key, value);
-      }
+      localStorage.setItem(key, value);
     },
     
     removeItem: (key: string) => {
-      if (key.includes('auth') || key.includes('token')) {
-        securityManager.removeItem();
-      } else {
-        localStorage.removeItem(key);
-      }
+      localStorage.removeItem(key);
     },
     
     clear: () => {
-      securityManager.clearSecureData();
+      // Only clear non-auth items to preserve Supabase session
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && !key.includes('sb-') && !key.includes('auth') && !key.includes('token')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
     }
   };
+};
+
+// Utility function to reset Supabase authentication storage
+export const resetSupabaseAuth = (): void => {
+  console.log('Resetting Supabase authentication storage...');
+  
+  // Clear all Supabase-related items
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.includes('sb-') || key.includes('auth') || key.includes('token'))) {
+      keysToRemove.push(key);
+    }
+  }
+  
+  keysToRemove.forEach(key => {
+    console.log(`Removing: ${key}`);
+    localStorage.removeItem(key);
+  });
+  
+  console.log(`Cleared ${keysToRemove.length} authentication items`);
+};
+
+// Utility function to check current auth state
+export const checkAuthState = (): { hasToken: boolean; keys: string[] } => {
+  const authKeys: string[] = [];
+  let hasToken = false;
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.includes('sb-') || key.includes('auth') || key.includes('token'))) {
+      authKeys.push(key);
+      const value = localStorage.getItem(key);
+      if (value && value.includes('ey')) { // JWT tokens start with 'ey'
+        hasToken = true;
+      }
+    }
+  }
+  
+  return { hasToken, keys: authKeys };
 };
 
 export { TokenSecurityManager, createSecureStorage };
