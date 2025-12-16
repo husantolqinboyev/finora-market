@@ -34,6 +34,11 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
 
+  // Debug post modal state
+  useEffect(() => {
+    console.log('Post modal state changed:', showPostForm);
+  }, [showPostForm]);
+
   // Debug log to track loading state
   console.log('Index component - loading:', loading, 'user:', user?.id);
 
@@ -564,7 +569,10 @@ const Index = () => {
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-lg opacity-75 animate-pulse"></div>
             <Button
-              onClick={() => setShowPostForm(true)}
+              onClick={() => {
+                console.log('Floating post button clicked, user:', user?.id);
+                setShowPostForm(true);
+              }}
               size="lg"
               className="relative h-16 w-16 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 border-4 border-white"
             >

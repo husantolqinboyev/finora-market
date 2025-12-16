@@ -61,26 +61,63 @@ const Post: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as any)
-          .from('categories')
-          .select('*')
-          .order('name');
-
-        if (error) throw error;
+        console.log('Fetching categories for post form...');
         
-        if (!data || data.length === 0) {
-          // Default categories
-          setCategories([
-            { id: 'cat1', name: 'Elektronika' },
-            { id: 'cat2', name: 'Kiyim-kechak' },
-            { id: 'cat3', name: 'Uy jihozlari' },
-            { id: 'cat4', name: 'Transport' },
-            { id: 'cat5', name: 'Xizmatlar' },
-            { id: 'cat6', name: 'Boshqa' }
-          ]);
-        } else {
-          setCategories(data || []);
+        // Try to use public client first
+        try {
+          const { publicSupabase } = await import('../lib/public-client');
+          const { data, error } = await publicSupabase
+            .from('categories')
+            .select('id, name')
+            .order('name');
+
+          if (error) {
+            console.error('Public client error:', error);
+            throw error;
+          }
+          
+          console.log('Categories fetched with public client:', data);
+          
+          if (!data || data.length === 0) {
+            // Default categories
+            setCategories([
+              { id: 'cat1', name: 'Elektronika' },
+              { id: 'cat2', name: 'Kiyim-kechak' },
+              { id: 'cat3', name: 'Uy jihozlari' },
+              { id: 'cat4', name: 'Transport' },
+              { id: 'cat5', name: 'Xizmatlar' },
+              { id: 'cat6', name: 'Boshqa' }
+            ]);
+          } else {
+            setCategories(data || []);
+          }
+        } catch (publicClientError) {
+          console.error('Public client failed, trying authenticated client:', publicClientError);
+          
+          // Fallback to authenticated client
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data, error } = await (supabase as any)
+            .from('categories')
+            .select('id, name')
+            .order('name');
+
+          if (error) throw error;
+          
+          console.log('Categories fetched with authenticated client:', data);
+          
+          if (!data || data.length === 0) {
+            // Default categories
+            setCategories([
+              { id: 'cat1', name: 'Elektronika' },
+              { id: 'cat2', name: 'Kiyim-kechak' },
+              { id: 'cat3', name: 'Uy jihozlari' },
+              { id: 'cat4', name: 'Transport' },
+              { id: 'cat5', name: 'Xizmatlar' },
+              { id: 'cat6', name: 'Boshqa' }
+            ]);
+          } else {
+            setCategories(data || []);
+          }
         }
       } catch (error) {
         console.error('Error fetching categories:', error);
