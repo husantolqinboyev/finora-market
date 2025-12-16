@@ -58,13 +58,22 @@ const Products = () => {
       const { createClient } = await import('@supabase/supabase-js');
       const publicSupabase = createClient(
         import.meta.env.VITE_SUPABASE_URL,
-        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false
+          }
+        }
       );
       
+      console.log('Fetching categories with public client...');
       const categoriesResponse = await publicSupabase
         .from('categories')
         .select('id, name')
         .order('name');
+      
+      console.log('Categories response:', categoriesResponse);
       
       if (!categoriesResponse.error && categoriesResponse.data) {
         setCategories(categoriesResponse.data);
@@ -74,12 +83,15 @@ const Products = () => {
 
       // Fetch listings (only approved and not expired) - use public client
       const now = new Date().toISOString();
+      console.log('Fetching listings with public client...');
       const listingsResponse = await publicSupabase
         .from('listings')
         .select('*')
         .eq('status', 'approved')
         .or(`expires_at.gt.${now},expires_at.is.null`)
         .order('created_at', { ascending: false });
+
+      console.log('Listings response:', listingsResponse);
 
       console.log('Listings response:', listingsResponse);
 
@@ -100,10 +112,13 @@ const Products = () => {
       try {
         const ownerIds = [...new Set(listings.map(l => l.owner_id).filter(Boolean))];
         if (ownerIds.length > 0) {
+          console.log('Fetching profiles with public client...');
           const profilesResponse = await publicSupabase
             .from('profiles')
             .select('id, full_name, avatar_url')
             .in('id', ownerIds);
+          
+          console.log('Profiles response:', profilesResponse);
           
           if (!profilesResponse.error && profilesResponse.data) {
             profileMap = new Map(
