@@ -170,6 +170,13 @@ const Products = () => {
     } catch (error) {
       console.error('Error fetching listings:', error);
       console.error('Error details:', error.message);
+      console.error('Stack trace:', error.stack);
+      
+      // Check if it's an import error
+      if (error.message && error.message.includes('Cannot resolve module')) {
+        console.error('Import error detected - public client module not found');
+      }
+      
       toast({
         title: "Xatolik",
         description: "Mahsulotlarni yuklashda xatolik",
